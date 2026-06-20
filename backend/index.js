@@ -10,6 +10,10 @@ const app = express();
 
 // Middleware
 // В backend/server.js замени app.use(cors()) с:
+// Тестов маршрут директно в index.js (без външни файлове)
+app.get("/api/test-live", (req, res) => {
+  res.json({ message: "Бекендът на Попинци е напълно жив в Render!" });
+});
 app.use(
   cors({
     origin: ["https://map-popintsi.vercel.app", "http://localhost:5173"],

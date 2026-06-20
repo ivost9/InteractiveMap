@@ -41,10 +41,9 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
 
     map.flyTo({
       center: [lng, lat],
-      zoom: 14.5,
+      zoom: 16,
       pitch: 60,
-      bearing: 45,
-      duration: 2500,
+      bearing: 0,
       essential: true,
     });
 

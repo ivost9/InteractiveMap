@@ -10,11 +10,16 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const API_URL =
+    window.location.hostname === "localhost"
+      ? "http://localhost:5000/api/places" // Ако тестваш локално
+      : "https://popintsi-api.onrender.com/api/places"; // Ако е отворен в интернет
+
+  // В твоя useEffect кодът става супер чист:
   useEffect(() => {
-    fetch("https://popintsi-api.onrender.com/api/places")
+    fetch(API_URL)
       .then((res) => {
-        if (!res.ok)
-          throw new Error("Грешка при дърпане на данните от сървъра");
+        if (!res.ok) throw new Error("Грешка при дърпане на данните");
         return res.json();
       })
       .then((data) => {
