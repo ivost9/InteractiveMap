@@ -68,7 +68,7 @@ function App() {
         </div>
 
         {/* КОНТЕНТ ЗОНА */}
-        <div className="p-4 md:p-6 flex-1 overflow-y-auto space-y-4">
+        <div className="p-4 md:p-6 flex-1 overflow-y-auto space-y-4 pb-12 md:pb-6 pb-[safe]">
           {loading && (
             <div className="flex items-center justify-center h-24 md:h-32 text-slate-400">
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-emerald-500 mr-2"></div>
