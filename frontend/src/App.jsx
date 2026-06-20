@@ -11,7 +11,7 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/places")
+    fetch("https://popintsi-api.onrender.com/api/places")
       .then((res) => {
         if (!res.ok)
           throw new Error("Грешка при дърпане на данните от сървъра");
