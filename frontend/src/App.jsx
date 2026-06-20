@@ -13,7 +13,7 @@ function App() {
   const API_URL =
     window.location.hostname === "localhost"
       ? "http://localhost:5000/api/places" // Ако тестваш локално
-      : "https://popintsi-api.onrender.com/api/places"; // Ако е отворен в интернет
+      : "https://interactivemap-9fa0.onrender.com/api/places"; // Ако е отворен в интернет
 
   // В твоя useEffect кодът става супер чист:
   useEffect(() => {
