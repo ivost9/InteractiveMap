@@ -62,7 +62,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, [activePlace]); // ⚠️ Фиксиран масив: винаги е с дължина точно 1!
+  }, [activePlace]);
 
   const onMapLoad = (e) => {
     const map = e.target;
@@ -92,7 +92,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
     if (!mapRef.current) return;
     const map = mapRef.current.getMap();
     stopAutorotation();
-    onSelectPlace(null); // Нулираме активния обект при прибиране у дома
+    onSelectPlace(null);
 
     map.flyTo({
       center: [POPINTSI_COORDS.longitude, POPINTSI_COORDS.latitude],
@@ -113,13 +113,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
       "text-size": 13,
       "text-offset": [0, 1.6],
       "text-anchor": "top",
-      "text-allow-overlap": [
-        "step",
-        ["zoom"],
-        false, // По подразбиране (при нисък зуум) е изключено
-        15, // Границата на зуума
-        true, // При зуум 15 и нагоре става true
-      ],
+      "text-allow-overlap": ["step", ["zoom"], false, 15, true],
       "text-ignore-placement": ["step", ["zoom"], false, 15, true],
     },
     paint: {
@@ -148,6 +142,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
         onLoad={onMapLoad}
         style={{ width: "100%", height: "100%" }}
         className="w-full h-full"
+        attributionControl={false} // 🔥 ЕТО ТОВА ПРЕМАХВА КРЪГЛОТО ИНФО ЗА MAPLIBRE!
         onMoveStart={(e) => {
           if (e.originalEvent) stopAutorotation();
         }}
@@ -155,7 +150,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
           if (e.originalEvent) stopAutorotation();
         }}
       >
-        {/* Бутоните за управление - изнесени и подсигурени със z-30 */}
+        {/* Бутоните за управление */}
         <div className="absolute top-4 left-4 md:left-auto md:right-4 z-30 flex flex-col gap-2 pointer-events-auto">
           <button
             onClick={toggle2D3D}
@@ -168,14 +163,14 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
             onClick={resetToPopintsi}
             className="px-3 py-2 bg-slate-900/95 text-emerald-400 rounded-xl font-bold border border-slate-700 shadow-2xl backdrop-blur-md hover:bg-slate-800 hover:scale-105 active:scale-95 transition-all text-[11px] md:text-xs"
           >
-            🏠 ПОПИНЦИ (ЦЕНТЪР)
+            {is3D ? "🏠 ПОПИНЦИ (ЦЕНТЪР)" : "🏠 ПОПИНЦИ (ЦЕНТЪР)"}
           </button>
         </div>
 
-        {/* Навигационни контроли на MapLibre */}
+        {/* Навигационни контроли */}
         <NavigationControl position="bottom-right" showCompass={true} />
 
-        {/* Слой за текстовите етикети */}
+        {/* Слой за етикетите */}
         {places && (
           <Source type="geojson" data={places}>
             <Layer
@@ -193,7 +188,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
           </Source>
         )}
 
-        {/* Маркерите (Икони или фини пинчета) */}
+        {/* Маркерите */}
         {places?.features?.map((place) => {
           const coordinates = place?.geometry?.coordinates;
           if (!coordinates || coordinates.length < 2) return null;
@@ -220,13 +215,45 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
               }}
             >
               {isSelected ? (
-                <div className="relative flex items-center justify-center w-6 h-6 animate-fade-in">
-                  <div className="absolute w-4 h-4 bg-rose-500 rounded-full animate-ping opacity-75"></div>
-                  <div className="w-2.5 h-2.5 bg-rose-600 rounded-full border border-white shadow-md"></div>
+                // 🎯 Изглед, когато мястото Е ИЗБРАНО (Пулсираща точка)
+                <div className="relative flex items-center justify-center w-8 h-8 animate-fade-in">
+                  <div className="absolute w-6 h-6 bg-emerald-500 rounded-full animate-ping opacity-75"></div>
+                  <div className="w-3.5 h-3.5 bg-emerald-600 rounded-full border-2 border-white shadow-xl"></div>
                 </div>
               ) : (
-                <div className="cursor-pointer text-2xl md:text-3xl transition-transform duration-200 hover:scale-125 select-none drop-shadow-[0_4px_6px_rgba(0,0,0,0.6)]">
-                  {placeIcon}
+                // 📍 ЕЛЕГАНТНА КЪРФИЦА (Мап пин) за неизбраните места
+                <div className="group relative cursor-pointer flex flex-col items-center transition-transform duration-300 hover:scale-110 active:scale-95 select-none">
+                  {/* Тялото на карфицата */}
+                  <div
+                    className="
+          w-8 h-8 
+          bg-gradient-to-tr from-slate-900 to-slate-800 
+          border border-slate-600/50 
+          rounded-full 
+          shadow-[0_4px_10px_rgba(0,0,0,0.5)] 
+          flex items-center justify-center 
+          relative z-10
+          group-hover:border-emerald-500/80
+          transition-colors duration-300
+        "
+                  >
+                    {/* Малка елегантна точка или мини-иконка в центъра на карфицата */}
+                    <div className="w-2.5 h-2.5 bg-emerald-400 rounded-full group-hover:bg-emerald-300 transition-colors"></div>
+                  </div>
+
+                  {/* Острото връхче на карфицата отдолу */}
+                  <div
+                    className="
+          w-2 h-2 
+          bg-slate-900 
+          border-r border-b border-slate-600/50 
+          rotate-45 
+          -mt-1 
+          shadow-[2px_2px_3px_rgba(0,0,0,0.3)]
+          group-hover:border-emerald-500/80
+          transition-colors duration-300
+        "
+                  ></div>
                 </div>
               )}
             </Marker>
