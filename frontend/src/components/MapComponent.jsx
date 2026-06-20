@@ -56,10 +56,24 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
       rotateMap();
     }, 2500);
 
+    const handleUserInterrupt = () => {
+      clearTimeout(timer);
+      stopAutorotation();
+      if (map) map.stop(); // Спира движението на MapLibre контейнера веднага
+    };
+
+    // 🔥 ТОВА ОТКЛЮЧВА КАРТАТА ПРИ ТЕЛЕФОНИ ВЕДНАГА:
+    map.on("touchstart", handleUserInterrupt);
+    map.on("mousedown", handleUserInterrupt);
+
     return () => {
       clearTimeout(timer);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
+      }
+      if (map) {
+        map.off("touchstart", handleUserInterrupt);
+        map.off("mousedown", handleUserInterrupt);
       }
     };
   }, [activePlace]);
