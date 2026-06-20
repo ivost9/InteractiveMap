@@ -38,7 +38,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
     const [lng, lat] = coordinates;
 
     stopAutorotation();
-
+    setIs3D(true);
     map.flyTo({
       center: [lng, lat],
       zoom: 16,
@@ -136,7 +136,8 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
       "text-halo-width": 2,
     },
   };
-
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+  const initialZoom = isMobile ? 13.5 : 14.8;
   return (
     <div
       className="w-full h-full relative"
@@ -147,7 +148,7 @@ export default function MapComponent({ places, onSelectPlace, activePlace }) {
         initialViewState={{
           longitude: POPINTSI_COORDS.longitude,
           latitude: POPINTSI_COORDS.latitude,
-          zoom: 14.8,
+          zoom: initialZoom,
           pitch: 0,
           bearing: 0,
         }}
